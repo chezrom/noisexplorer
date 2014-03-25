@@ -349,6 +349,20 @@ local function generateDotsInGrid()
 	end
 end
 
+local function generateDotsAlternateInGrid()
+	vertices={}
+	local perLine,nbLines = math.ceil(stage.w/10),math.ceil(stage.h/10)
+	local off=0
+	for iy=0,nbLines do
+		local y = iy*10
+		for ix=0,perLine do
+			local x = ix*10 +off
+			table.insert(vertices,{hue=0,sx=x,sy=y})
+		end
+		if off == 0 then off =5 else off=0 end
+	end
+end
+
 function love.load()
 	math.randomseed(os.time())
 	color.genColors()
@@ -358,6 +372,7 @@ function love.load()
 	bgMenu = newMenu(menuFont,{
 		{title="Random dots",f=generateDots},
 		{title="Dots in grid",f=generateDotsInGrid},
+		{title="Dots in grid (alternated)",f=generateDotsAlternateInGrid},
 	})
 	spacing = 10
 	generateDots()
