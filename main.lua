@@ -11,6 +11,14 @@ local taskBar={}
 local activeMenu=nil
 local bgMenu=nil
 
+local refPoint={sx=0,sy=0}
+local ox,oy,ux,uy
+
+local function defaultZoom()
+	ox,oy=0,0
+	ux,uy=1/200,1/200
+end
+
 local function displaySingleDot() 
 	for _,vert in ipairs(vertices) do
 		love.graphics.setColor(COL(vert.hue, 255))
@@ -89,28 +97,28 @@ local displayModes = {
 
 local function oneOctave()
 	for _,vert in ipairs(vertices) do
-		local xx,yy,zz=vert.sx/200,vert.sy/200, cur_time/2
+		local xx,yy,zz=vert.x,vert.y, cur_time/2
 		vert.hue = love.math.noise(xx,yy,zz)
 	end
 end
 
 local function twoOctaves()
 	for _,vert in ipairs(vertices) do
-		local xx,yy,zz=vert.sx/200,vert.sy/200, cur_time/2
+		local xx,yy,zz=vert.x,vert.y, cur_time/2
 		vert.hue = (love.math.noise(xx,yy,zz) + love.math.noise(xx*2,yy*2,zz*2)/2)/1.5
 	end
 end
 
 local function threeOctaves()
 	for _,vert in ipairs(vertices) do
-		local xx,yy,zz=vert.sx/200,vert.sy/200, cur_time/2
+		local xx,yy,zz=vert.x,vert.y, cur_time/2
 		vert.hue = (love.math.noise(xx,yy,zz) + love.math.noise(xx*2,yy*2,zz*2)/2 + love.math.noise(xx*4,yy*4,zz*4)/4)/1.75
 	end
 end
 
 local function fourOctaves()
 	for _,vert in ipairs(vertices) do
-		local xx,yy,zz=vert.sx/200,vert.sy/200, cur_time/2
+		local xx,yy,zz=vert.x,vert.y, cur_time/2
 		vert.hue = (love.math.noise(xx,yy,zz) + love.math.noise(xx*2,yy*2,zz*2)/2 + love.math.noise(xx*4,yy*4,zz*4)/4+ love.math.noise(xx*8,yy*8,zz*8)/8)/1.875
 	end
 end
@@ -328,6 +336,12 @@ function taskBar:rclick(x,y)
 	end
 end
 
+local function computeCoord()
+	for _,v in ipairs(vertices) do
+		v.x = ox + ux * v.sx
+		v.y = oy + uy * v.sy
+	end
+end
 
 local function generateDots()
 	local points=gen2d(stage.w,stage.h,10)
@@ -335,6 +349,7 @@ local function generateDots()
 	for _,p in ipairs(points) do
 		table.insert(vertices,{hue=0,sx=math.floor(p.x),sy=math.floor(p.y)})
 	end
+	computeCoord()
 end
 
 local function generateDotsInGrid()
@@ -347,6 +362,7 @@ local function generateDotsInGrid()
 			table.insert(vertices,{hue=0,sx=x,sy=y})
 		end
 	end
+	computeCoord()
 end
 
 local function generateDotsAlternateInGrid()
@@ -361,10 +377,35 @@ local function generateDotsAlternateInGrid()
 		end
 		if off == 0 then off =5 else off=0 end
 	end
+	computeCoord()
+end
+
+local function restoreZoom()
+	defaultZoom()
+	computeCoord()
+end
+
+local function zoomIn()
+	local x,y =refPoint.sx * ux + ox, refPoint.sy *uy + oy
+	ux = ux/2
+	uy = uy/2
+	ox = x - stage.w/2 * ux
+	oy = y - stage.h/2 * uy
+	computeCoord()
+end
+
+local function zoomOut()
+	local x,y =refPoint.sx * ux + ox, refPoint.sy *uy + oy
+	ux = ux*2
+	uy = uy*2
+	ox = x - stage.w/2 * ux
+	oy = y - stage.h/2 * uy
+	computeCoord()
 end
 
 function love.load()
 	math.randomseed(os.time())
+	defaultZoom()
 	color.genColors()
 	stage = {w=lg.getWidth(), h=lg.getHeight()}
 	initTaskBar(lg.newFont(18))
@@ -373,6 +414,9 @@ function love.load()
 		{title="Random dots",f=generateDots},
 		{title="Dots in grid",f=generateDotsInGrid},
 		{title="Dots in grid (alternated)",f=generateDotsAlternateInGrid},
+		{title="Initial zoom",f=restoreZoom},
+		{title="Zoom in",f=zoomIn},
+		{title="Zoom out",f=zoomOut},
 	})
 	spacing = 10
 	generateDots()
@@ -405,6 +449,7 @@ function love.mousepressed( x, y, button )
 		if button=="l" then taskBar:lclick(x,y) else taskBar:rclick(x,y) end
 	elseif button=="r" then
 		activeMenu=bgMenu
+		refPoint={sx=x,sy=y}
 		activeMenu:open(x,y)
 	end
 end
