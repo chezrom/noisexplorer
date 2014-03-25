@@ -330,19 +330,19 @@ end
 
 
 local function generateDots()
-	local points=gen2d(stage.w-20,stage.h-20,10)
+	local points=gen2d(stage.w,stage.h,10)
 	vertices = {}
 	for _,p in ipairs(points) do
-		table.insert(vertices,{hue=0,sx=math.floor(p.x)+10,sy=math.floor(p.y)+10})
+		table.insert(vertices,{hue=0,sx=math.floor(p.x),sy=math.floor(p.y)})
 	end
 end
 
 local function generateDotsInGrid()
 	vertices={}
-	local perLine,nbLines = math.floor(stage.w/10),math.floor(stage.h/10)
-	for iy=1,nbLines do
+	local perLine,nbLines = math.ceil(stage.w/10),math.ceil(stage.h/10)
+	for iy=0,nbLines do
 		local y = iy*10
-		for ix=1,perLine do
+		for ix=0,perLine do
 			local x = ix*10
 			table.insert(vertices,{hue=0,sx=x,sy=y})
 		end
