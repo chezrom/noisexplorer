@@ -2,26 +2,26 @@ local methods={}
 local lg=love.graphics
 
 function methods:draw()
-		lg.setColor(self.bg)
-		lg.rectangle('fill',self.x,self.y,self.width,self.height)
-		lg.setColor(self.fg)
-		lg.setFont(self.font)
-		lg.rectangle('line',self.x,self.y,self.width,self.height)
-		for i,it in ipairs(self.items) do
-			if i==self.selected then
-				lg.rectangle('fill',self.x,self.y+(i-1)*self.itemHeight+4,self.width,self.itemHeight)
-				lg.setColor(self.fgi)
-			end
-			local text = it.title
-			if text == "-" then
-				
-			else
-				lg.print(text,self.x+4,self.y+(i-1)*self.itemHeight+6)
-			end
-			if i==self.selected then
-				lg.setColor(self.fg)
-			end
+	lg.setColor(self.bg)
+	lg.rectangle('fill',self.x,self.y,self.width,self.height)
+	lg.setColor(self.fg)
+	lg.setFont(self.font)
+	lg.rectangle('line',self.x,self.y,self.width,self.height)
+	for i,it in ipairs(self.items) do
+		if i==self.selected then
+			lg.rectangle('fill',self.x,self.y+(i-1)*self.itemHeight+4,self.width,self.itemHeight)
+			lg.setColor(self.fgi)
 		end
+		local text = it.title
+		if text == "-" then
+			
+		else
+			lg.print(text,self.x+4,self.y+(i-1)*self.itemHeight+6)
+		end
+		if i==self.selected then
+			lg.setColor(self.fg)
+		end
+	end
 end
 
 function methods:update(dt)
