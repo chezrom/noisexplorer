@@ -488,9 +488,11 @@ function love.mousereleased( x, y, button )
 	if dragOrigin and button=="l" then
 		local leftx,topy=math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2])
 		local rightx,bottomy=math.max(dragOrigin[1],dragDest[1]),math.max(dragOrigin[2],dragDest[2])
-		ox,oy = ux*leftx+ox,uy*topy+oy
-		ux,uy = ux*(rightx-leftx)/stage.w,uy*(bottomy-topy)/stage.h
-		computeCoord()
+		if (rightx-leftx > 10) and (bottomy-topy > 10) then
+			ox,oy = ux*leftx+ox,uy*topy+oy
+			ux,uy = ux*(rightx-leftx)/stage.w,uy*(bottomy-topy)/stage.h
+			computeCoord()
+		end
 		dragOrigin=nil
 	end
 end
@@ -514,7 +516,7 @@ function love.draw()
 	taskBar:draw()
 	if activeMenu then activeMenu:draw() end
 	if dragOrigin and dragDest then
-		lg.setColor(128,128,128,96)
+		lg.setColor(128,128,128,196)
 		lg.rectangle('fill',math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2]),math.abs(dragOrigin[1]-dragDest[1]),math.abs(dragOrigin[2]-dragDest[2]))
 	end
 end
