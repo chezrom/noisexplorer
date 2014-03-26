@@ -16,6 +16,8 @@ local paused=false
 local refPoint={sx=0,sy=0}
 local ox,oy,ux,uy
 
+local dragOrigin,dragDest=nil,nil
+
 local function defaultZoom()
 	ox,oy=0,0
 	ux,uy=1/200,1/200
@@ -267,8 +269,6 @@ function taskBar:draw()
 		
 		lg.setColor(255,255,255,255)
 		lg.draw(color.colorBtnImage,self.colbX,self.colbY+self.Y-self.height)
-		
-		
 	end
 end
 
@@ -421,6 +421,12 @@ local function zoomOut()
 	computeCoord()
 end
 
+local function zoomSquare()
+	ux = math.max(ux,uy)
+	uy = ux
+	computeCoord()
+end
+
 function love.load()
 	math.randomseed(os.time())
 	defaultZoom()
@@ -432,9 +438,11 @@ function love.load()
 		{title="Random dots",f=generateDots},
 		{title="Dots in grid",f=generateDotsInGrid},
 		{title="Dots in grid (alternated)",f=generateDotsAlternateInGrid},
-		{title="Initial zoom",f=restoreZoom},
+		{title="Initial view",f=restoreZoom},
 		{title="Zoom in",f=zoomIn},
 		{title="Zoom out",f=zoomOut},
+		{title="Square view",f=zoomSquare},
+		
 	})
 	spacing = 10
 	generateDots()
@@ -456,6 +464,7 @@ function love.keypressed(key)
 end
 
 function love.mousepressed( x, y, button ) 
+	if dragOrigin then return end
 	if activeMenu and activeMenu:hit(x,y) then
 		if button=="l" then activeMenu:lclick(x,y) end
 		activeMenu=nil
@@ -465,6 +474,9 @@ function love.mousepressed( x, y, button )
 	end
 	if taskBar.visible and y < taskBar.Y then
 		if button=="l" then taskBar:lclick(x,y) else taskBar:rclick(x,y) end
+	elseif button=="l" then
+		dragOrigin={x,y}
+		dragDest=nil
 	elseif button=="r" then
 		activeMenu=bgMenu
 		refPoint={sx=x,sy=y}
@@ -472,18 +484,37 @@ function love.mousepressed( x, y, button )
 	end
 end
 
+function love.mousereleased( x, y, button ) 
+	if dragOrigin and button=="l" then
+		local leftx,topy=math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2])
+		local rightx,bottomy=math.max(dragOrigin[1],dragDest[1]),math.max(dragOrigin[2],dragDest[2])
+		ox,oy = ux*leftx+ox,uy*topy+oy
+		ux,uy = ux*(rightx-leftx)/stage.w,uy*(bottomy-topy)/stage.h
+		computeCoord()
+		dragOrigin=nil
+	end
+end
+
 function love.update(dt)
 	if not paused then cur_time = cur_time + dt end
 	octaves[nbOctaves]()
-	taskBar:update(dt)
+	if dragOrigin then
+		dragDest={lm.getX(),lm.getY()}	
+	else
+		taskBar:update(dt)
+	end
 end
 
 
 function love.draw()
-	love.graphics.setColor(0, 0, 0)
-	love.graphics.rectangle("fill", 0, 0, stage.w, stage.h)
-	love.graphics.setColor(255, 255, 255)
+	lg.setColor(0, 0, 0)
+	lg.rectangle("fill", 0, 0, stage.w, stage.h)
+	lg.setColor(255, 255, 255)
 	displayModes[idMode].f()
 	taskBar:draw()
 	if activeMenu then activeMenu:draw() end
+	if dragOrigin and dragDest then
+		lg.setColor(128,128,128,96)
+		lg.rectangle('fill',math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2]),math.abs(dragOrigin[1]-dragDest[1]),math.abs(dragOrigin[2]-dragDest[2]))
+	end
 end
