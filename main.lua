@@ -11,6 +11,8 @@ local taskBar={}
 local activeMenu=nil
 local bgMenu=nil
 
+local paused=false
+
 local refPoint={sx=0,sy=0}
 local ox,oy,ux,uy
 
@@ -184,6 +186,12 @@ local function initTaskBar(f)
 	taskBar.lockX = stage.w-taskBar.lockW - 5
 	taskBar.lockY = math.floor(taskBar.height/2 - taskBar.lockH/2)
 
+	taskBar.pauseText = "PAUSE"
+	taskBar.pauseW = f:getWidth(taskBar.pauseText)+6
+	taskBar.pauseH = f:getHeight()+6
+	taskBar.pauseX = taskBar.lockX-10-taskBar.pauseW
+	taskBar.pauseY = math.floor(taskBar.height/2 - taskBar.lockH/2)
+	
 	taskBar.colbX = taskBar.choiceX + taskBar.choiceW + 10
 	taskBar.colbY = math.floor(taskBar.height/2 - color.colorBtnImage:getHeight()/2)
 	
@@ -249,6 +257,13 @@ function taskBar:draw()
 			lg.setColor(self.fgi)
 		end
 		lg.printf(self.lockText,self.lockX+3,self.lockY+3+self.Y-self.height,self.lockW-6,'center')
+
+		lg.setColor(self.fg)
+		lg.rectangle((paused and 'fill')or 'line',self.pauseX,self.pauseY+self.Y-self.height,self.pauseW,self.pauseH)
+		if paused then
+			lg.setColor(self.fgi)
+		end
+		lg.printf(self.pauseText,self.pauseX+3,self.pauseY+3+self.Y-self.height,self.pauseW-6,'center')
 		
 		lg.setColor(255,255,255,255)
 		lg.draw(color.colorBtnImage,self.colbX,self.colbY+self.Y-self.height)
@@ -291,6 +306,9 @@ function taskBar:lclick(x,y)
 	end
 	if x>=self.lockX and x<=self.lockX+self.lockW then
 		self.locked = not self.locked
+	end
+	if x>=self.pauseX and x<=self.pauseX+self.pauseW then
+		paused = not paused
 	end
 	if x>=self.colbX and x <= self.colbX+color.colorBtnImage:getWidth() then
 		color.genColors()
@@ -455,7 +473,7 @@ function love.mousepressed( x, y, button )
 end
 
 function love.update(dt)
-	cur_time = cur_time + dt
+	if not paused then cur_time = cur_time + dt end
 	octaves[nbOctaves]()
 	taskBar:update(dt)
 end
