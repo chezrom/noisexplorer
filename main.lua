@@ -516,7 +516,11 @@ function love.draw()
 	taskBar:draw()
 	if activeMenu then activeMenu:draw() end
 	if dragOrigin and dragDest then
-		lg.setColor(128,128,128,196)
-		lg.rectangle('fill',math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2]),math.abs(dragOrigin[1]-dragDest[1]),math.abs(dragOrigin[2]-dragDest[2]))
+		local lw = lg.getLineWidth()
+		lg.setLineWidth(5)
+		lg.setColor(255,0,0)
+		lg.rectangle('line',math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2]),math.abs(dragOrigin[1]-dragDest[1]),math.abs(dragOrigin[2]-dragDest[2]))
+		lg.setLineWidth(lw)
+
 	end
 end
