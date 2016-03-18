@@ -463,29 +463,29 @@ function love.keypressed(key)
 	end
 end
 
-function love.mousepressed( x, y, button ) 
+function love.mousepressed( x, y, button, istouch ) 
 	if dragOrigin then return end
 	if activeMenu and activeMenu:hit(x,y) then
-		if button=="l" then activeMenu:lclick(x,y) end
+		if button==1 then activeMenu:lclick(x,y) end
 		activeMenu=nil
 		return
 	elseif activeMenu then
 		activeMenu=nil
 	end
 	if taskBar.visible and y < taskBar.Y then
-		if button=="l" then taskBar:lclick(x,y) else taskBar:rclick(x,y) end
-	elseif button=="l" then
+		if button==1 then taskBar:lclick(x,y) else taskBar:rclick(x,y) end
+	elseif button==1 then
 		dragOrigin={x,y}
 		dragDest=nil
-	elseif button=="r" then
+	elseif button==2 then
 		activeMenu=bgMenu
 		refPoint={sx=x,sy=y}
 		activeMenu:open(x,y)
 	end
 end
 
-function love.mousereleased( x, y, button ) 
-	if dragOrigin and button=="l" then
+function love.mousereleased( x, y, button, istouch ) 
+	if dragOrigin and button==1 then
 		local leftx,topy=math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2])
 		local rightx,bottomy=math.max(dragOrigin[1],dragDest[1]),math.max(dragOrigin[2],dragDest[2])
 		if (rightx-leftx > 10) and (bottomy-topy > 10) then
