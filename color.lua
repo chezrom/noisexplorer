@@ -93,6 +93,19 @@ function fcolor.greyscale()
 	colors = {{0,0,0},{255,255,255}}
 	genColorBtnImage()
 end
+
+function fcolor.thermal()
+	fcolor.nbColors=4
+	colors= {
+		{0,0,0},
+		{255,0,0},
+		{255,255,0},
+		{255,255,255},
+	}
+	genColorBtnImage()
+end
+
+
 function fcolor.COL(v,a)
 	if v < 0 then v=0 end
 	local u=v*(#colors-1)

@@ -30,10 +30,24 @@ local function displaySingleDot()
 	end
 end
 
+function displaySingleDotTransparent()
+	for _,vert in ipairs(vertices) do
+		love.graphics.setColor(COL(vert.hue, 127))
+		love.graphics.circle("fill", vert.sx, vert.sy, 15)
+	end
+end
+
 local function displaySingleSquare() 
 	for _,vert in ipairs(vertices) do
 		love.graphics.setColor(COL(vert.hue, 255))
 		love.graphics.rectangle("fill", vert.sx-5, vert.sy-5, 10, 10)
+	end
+end
+
+local function displaySingleSquareTransparent() 
+	for _,vert in ipairs(vertices) do
+		love.graphics.setColor(COL(vert.hue, 127))
+		love.graphics.rectangle("fill", vert.sx-8, vert.sy-8, 16, 16)
 	end
 end
 
@@ -91,9 +105,11 @@ end
 local idMode=1
 local displayModes = {
 	{title="Single dot", f=displaySingleDot},
+	{title="Single dot, transparent", f=displaySingleDotTransparent},
 	{title="Two dots, transparent",f=displayTwoDotsTransparent},
 	{title="Two dots, solid",f=displayTwoDotsSolid},
 	{title="Single square",f=displaySingleSquare},
+	{title="Single square, transparent", f=displaySingleSquareTransparent},
 	{title="Two squares, transparent",f=displayTwoSquaresTransparent},
 	{title="Two squares, solid",f=displayTwoSquaresSolid}
 }
@@ -228,6 +244,7 @@ local function initTaskBar(f)
 		{title="Convert to grey",f=color.greyColors},
 		{title="Greyscale",f=color.greyscale},
 		{title="Chromatic",f=color.chromatic},
+		{title="Thermal",f=color.thermal},
 	})
 	
 end
@@ -500,6 +517,14 @@ end
 function love.update(dt)
 	if not paused then cur_time = cur_time + dt end
 	octaves[nbOctaves]()
+
+	for _,vert in ipairs(vertices) do
+		local p=vert.hue
+		if p<0 then p = 0 end
+		if p>1 then p = 1 end
+		vert.hue = p * p * p * ( p * (6*p-15) + 10)
+	end
+	
 	if dragOrigin then
 		dragDest={lm.getX(),lm.getY()}	
 	else
