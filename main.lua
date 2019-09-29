@@ -158,9 +158,9 @@ end
 local function initTaskBar(f)
 	taskBar.font   = f
 	taskBar.height =  f:getHeight() + 15
-	taskBar.bg = {0,0,196,196}
-	taskBar.fg = {255,255,255,255}
-	taskBar.fgi = {0,0,255,255}
+	taskBar.bg = {0,0,196/255,196/255}
+	taskBar.fg = {1,1,1,1}
+	taskBar.fgi = {0,0,1,1}
 	
 	taskBar.triggerY = 5
 	taskBar.visible=false
@@ -284,7 +284,7 @@ function taskBar:draw()
 		end
 		lg.printf(self.pauseText,self.pauseX+3,self.pauseY+3+self.Y-self.height,self.pauseW-6,'center')
 		
-		lg.setColor(255,255,255,255)
+		lg.setColor(1,1,1,1)
 		lg.draw(color.colorBtnImage,self.colbX,self.colbY+self.Y-self.height)
 	end
 end
@@ -536,14 +536,14 @@ end
 function love.draw()
 	lg.setColor(0, 0, 0)
 	lg.rectangle("fill", 0, 0, stage.w, stage.h)
-	lg.setColor(255, 255, 255)
+	lg.setColor(1, 1, 1)
 	displayModes[idMode].f()
 	taskBar:draw()
 	if activeMenu then activeMenu:draw() end
 	if dragOrigin and dragDest then
 		local lw = lg.getLineWidth()
 		lg.setLineWidth(5)
-		lg.setColor(255,0,0)
+		lg.setColor(1,0,0)
 		lg.rectangle('line',math.min(dragOrigin[1],dragDest[1]),math.min(dragOrigin[2],dragDest[2]),math.abs(dragOrigin[1]-dragDest[1]),math.abs(dragOrigin[2]-dragDest[2]))
 		lg.setLineWidth(lw)
 

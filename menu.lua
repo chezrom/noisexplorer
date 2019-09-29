@@ -52,9 +52,9 @@ local function newMenu(f,items)
 	local m=setmetatable({font=f,items=items,selected=0},{__index=methods})
 	m.itemHeight = f:getHeight() +4 
 	m.height =  m.itemHeight * #items+ 8
-	m.bg = {0,0,196,196}
-	m.fg = {255,255,255,255}
-	m.fgi = {0,0,255,255}
+	m.bg = {0,0,196/255,196/255}
+	m.fg = {1,1,1,1}
+	m.fgi = {0,0,1,1}
 	local maxw=0
 	for _,it in ipairs(items) do
 		local w = f:getWidth(it.title)

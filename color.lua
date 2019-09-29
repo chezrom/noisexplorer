@@ -14,7 +14,7 @@ local function genColorBtnImage()
 	local id = love.image.newImageData(150,20)
 	for x=0,149 do
 		for y=0,19 do
-			id:setPixel(x,y,fcolor.COL(x/150,255))
+			id:setPixel(x,y,fcolor.COL(x/150,1))
 		end
 	end
 	fcolor.colorBtnImage = lg.newImage(id)
@@ -31,7 +31,7 @@ function fcolor.genColors()
 	colors = {}
 	for i=1,fcolor.nbColors do
 		local point = table.remove(points,math.random(1,#points))
-		colors[i] = {floor(point.x*255),floor(point.y*255),floor(point.z*255)}
+		colors[i] = {point.x,point.y,point.z}
 	end
 	genColorBtnImage()
 
@@ -77,20 +77,20 @@ end
 function fcolor.chromatic()
 	fcolor.nbColors=7
 	colors= {
-		{255,0,0},
-		{255,255,0},
-		{0,255,0},
-		{0,255,255},
-		{0,0,255},
-		{255,0,255},
-		{255,0,0},
+		{1,0,0},
+		{1,1,0},
+		{0,1,0},
+		{0,1,1},
+		{0,0,1},
+		{1,0,1},
+		{1,0,0},
 	}
 	genColorBtnImage()
 end
 
 function fcolor.greyscale()
 	fcolor.nbColors=2
-	colors = {{0,0,0},{255,255,255}}
+	colors = {{0,0,0},{1,1,1}}
 	genColorBtnImage()
 end
 
@@ -98,9 +98,9 @@ function fcolor.thermal()
 	fcolor.nbColors=4
 	colors= {
 		{0,0,0},
-		{255,0,0},
-		{255,255,0},
-		{255,255,255},
+		{1,0,0},
+		{1,1,0},
+		{1,1,1},
 	}
 	genColorBtnImage()
 end
